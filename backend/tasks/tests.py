@@ -88,3 +88,13 @@ class TestPriorityScorer:
         assert len(errors) > 0
         assert any('estimated_hours' in error for error in errors)
         assert any('importance' in error for error in errors)
+        
+    def test_detect_circular_dependencies_simple(self):
+        """Test detection of simple circular dependency"""
+        tasks = [
+            {'id': 1, 'dependencies': [2]},
+            {'id': 2, 'dependencies': [1]} 
+        ]
+        
+        circular = PriorityScorer.detect_circular_dependencies(tasks)
+        assert len(circular) > 0

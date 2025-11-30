@@ -124,3 +124,7 @@ class PriorityScorer:
                 errors.append("Estimated hours must be at least 0.5")
         
         return errors
+    
+    @classmethod
+    def detect_circular_dependencies(cls, tasks: List[Dict[str, Any]]) -> List[str]:
+        pass
