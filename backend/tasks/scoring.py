@@ -1,6 +1,15 @@
 from datetime import date, datetime
 from typing import List, Dict, Any
 class PriorityScorer:
+    """
+    Intelligent priority scoring algorithm for tasks.
+    
+    The algorithm considers multiple factors:
+    - Urgency: How soon is the task due?
+    - Importance: User-provided rating (1-10)
+    - Effort: Lower effort tasks are "quick wins"
+    - Dependencies: Tasks blocking others rank higher
+    """
     
     # Configurable weights for different strategies
     STRATEGY_WEIGHTS = {
@@ -32,6 +41,18 @@ class PriorityScorer:
     
     @staticmethod
     def calculate_urgency_score(due_date: date) -> float:
+        """
+        Calculate urgency score based on days until due date.
+        
+        Scoring logic:
+        - Overdue: 100 + (days overdue * 5) - highest priority
+        - Due today: 95
+        - Due tomorrow: 85
+        - Due in 2-3 days: 70
+        - Due in 4-7 days: 50
+        - Due in 8-14 days: 30
+        - Due beyond 14 days: 10
+        """
         
         today = date.today()
         days_until_due = (due_date - today).days
@@ -54,15 +75,31 @@ class PriorityScorer:
     
     @staticmethod
     def calculate_importance_score(importance: int) -> float:
+        """
+        Normalize importance (1-10 scale) to 0-100 score.
+        """
         return (importance / 10) * 100
     
     @staticmethod
     def calculate_effort_score(estimated_hours: float) -> float:
+        """
+        Calculate effort score (inverse relationship).
+        Lower effort = higher score (quick wins).
+        
+        - 1 hour or less: 90+ points
+        - 2-3 hours: 70-80 points
+        - 4-5 hours: 50-60 points
+        - 6+ hours: diminishing returns
+        """
         # Inverse scoring - less time = higher score
         return max(0, 100 - (estimated_hours * 10))
     
     @staticmethod
     def calculate_dependency_score(dependencies: List) -> float:
+        """
+        Score based on number of dependencies.
+        More dependencies = higher score (blocks other work).
+        """
         return len(dependencies) * 15
     
     @classmethod
@@ -71,6 +108,16 @@ class PriorityScorer:
         task: Dict[str, Any],
         strategy: str = 'smart_balance'
     ) -> Dict[str, Any]:
+        """
+        Calculate comprehensive priority score for a task.
+        
+        Args:
+            task: Dictionary containing task details
+            strategy: Scoring strategy to use
+            
+        Returns:
+            Dictionary with score, breakdown, and explanation
+        """
         # Handle due_date validation
         if isinstance(task.get('due_date'), str):
             due_date = datetime.strptime(task['due_date'], '%Y-%m-%d').date()
@@ -116,6 +163,12 @@ class PriorityScorer:
         cls,
         tasks: List[Dict[str, Any]]
     ) -> List[str]:
+        """
+        Detect circular dependencies in task list.
+        
+        Returns:
+            List of task IDs involved in circular dependencies
+        """
         task_map = {task['id']: task.get('dependencies', []) for task in tasks}
         circular = []
         
@@ -143,6 +196,12 @@ class PriorityScorer:
         
     @classmethod
     def validate_task(cls, task: Dict[str, Any]) -> List[str]:
+        """
+        Validate task data and return list of errors.
+        
+        Returns:
+            List of validation error messages
+        """
         errors = []
         
         required_fields = ['title', 'due_date', 'estimated_hours', 'importance']
@@ -169,6 +228,7 @@ class PriorityScorer:
         dependencies: float,
         strategy: str
     ) -> str:
+        """Generate human-readable explanation for the priority score."""
         reasons = []
         
         if urgency > 95:
