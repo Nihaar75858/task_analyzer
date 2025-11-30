@@ -107,6 +107,36 @@ class PriorityScorer:
         }
         
     @classmethod
+    def detect_circular_dependencies(
+        cls,
+        tasks: List[Dict[str, Any]]
+    ) -> List[str]:
+        task_map = {task['id']: task.get('dependencies', []) for task in tasks}
+        circular = []
+        
+        def has_cycle(task_id, visited, rec_stack):
+            visited.add(task_id)
+            rec_stack.add(task_id)
+            
+            for dep_id in task_map.get(task_id, []):
+                if dep_id not in visited:
+                    if has_cycle(dep_id, visited, rec_stack):
+                        return True
+                elif dep_id in rec_stack:
+                    circular.append(task_id)
+                    return True
+            
+            rec_stack.remove(task_id)
+            return False
+        
+        visited = set()
+        for task_id in task_map.keys():
+            if task_id not in visited:
+                has_cycle(task_id, visited, set())
+        
+        return list(set(circular))
+        
+    @classmethod
     def validate_task(cls, task: Dict[str, Any]) -> List[str]:
         errors = []
         
@@ -124,7 +154,3 @@ class PriorityScorer:
                 errors.append("Estimated hours must be at least 0.5")
         
         return errors
-    
-    @classmethod
-    def detect_circular_dependencies(cls, tasks: List[Dict[str, Any]]) -> List[str]:
-        pass
