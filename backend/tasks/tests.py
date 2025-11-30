@@ -51,3 +51,27 @@ class TestPriorityScorer:
         normal_score = PriorityScorer.calculate_priority(normal_task)
         
         assert overdue_score['priority_score'] > normal_score['priority_score']
+        
+    def test_different_strategies(self):
+        """Test that different strategies produce different scores"""
+        task = {
+            'id': 1,
+            'title': 'Test Task',
+            'due_date': date.today() + timedelta(days=3),
+            'estimated_hours': 1,
+            'importance': 10,
+            'dependencies': []
+        }
+        
+        score_balance = PriorityScorer.calculate_priority(task, 'smart_balance')
+        score_fastest = PriorityScorer.calculate_priority(task, 'fastest_wins')
+        score_impact = PriorityScorer.calculate_priority(task, 'high_impact')
+        score_deadline = PriorityScorer.calculate_priority(task, 'deadline_driven')
+        
+        scores = [
+            score_balance['priority_score'],
+            score_fastest['priority_score'],
+            score_impact['priority_score'],
+            score_deadline['priority_score']
+        ]
+        assert len(set(scores)) > 1
