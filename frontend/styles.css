@@ -41,3 +41,116 @@ body {
     margin-bottom: 30px;
 }
 
+strategy-selector {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.strategy-selector label {
+    font-weight: 600;
+    color: #333;
+}
+
+.strategy-selector select {
+    flex: 1;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: border-color 0.3s;
+}
+
+.strategy-selector select:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.input-section {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+}
+
+.input-section h2 {
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.task-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.task-form input,
+.task-form button {
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1em;
+}
+
+.task-form input:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.importance-slider {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.importance-slider label {
+    font-weight: 600;
+    color: #333;
+}
+
+.importance-slider input[type="range"] {
+    width: 100%;
+    padding: 0;
+    border: none;
+}
+
+.bulk-input {
+    margin-top: 30px;
+    padding-top: 30px;
+    border-top: 2px solid #f0f0f0;
+}
+
+.bulk-input h3 {
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.bulk-input textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+    resize: vertical;
+    margin-bottom: 15px;
+}
+
+.bulk-input textarea:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}

@@ -14,6 +14,12 @@ const bulkInput = document.getElementById('bulkInput');
 const bulkAddBtn = document.getElementById('bulkAddBtn');
 const taskList = document.getElementById('taskList');
 const taskCount = document.getElementById('taskCount');
+const analyzeBtn = document.getElementById('analyzeBtn');
+const strategySelect = document.getElementById('strategy');
+const suggestionsSection = document.getElementById('suggestionsSection');
+const suggestions = document.getElementById('suggestions');
+const resultsSection = document.getElementById('resultsSection');
+const results = document.getElementById('results');
 
 // Event listeners
 importanceInput.addEventListener('input', (e) => {
@@ -22,6 +28,7 @@ importanceInput.addEventListener('input', (e) => {
 
 addTaskBtn.addEventListener('click', addTask);
 bulkAddBtn.addEventListener('click', addBulkTasks);
+analyzeBtn.addEventListener('click', analyzeTasks);
 
 // Set minimum date to today
 dueDateInput.min = new Date().toISOString().split('T')[0];
@@ -120,5 +127,68 @@ function updateTaskList() {
             </div>
         </div>
     `).join('');
+}
+
+async function analyzeTasks() {
+    if (tasks.length === 0) return;
+
+    suggestionsSection.classList.add('hidden');
+    resultsSection.classList.add('hidden');
+
+    const strategy = strategySelect.value;
+
+    try {
+        // Call analyze endpoint
+        const analyzeResponse = await fetch('http://127.0.0.1:8000/api/tasks/analyze/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                tasks: tasks,
+                strategy: strategy
+            })
+        });
+
+        if (!analyzeResponse.ok) {
+            const error = await analyzeResponse.json();
+            throw new Error(error.error || 'Failed to analyze tasks');
+        }
+
+        const analyzeData = await analyzeResponse.json();
+
+        // Call suggest endpoint
+        const suggestResponse = await fetch('http://127.0.0.1:8000/api/tasks/suggest/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                tasks: tasks,
+                strategy: strategy
+            })
+        });
+
+        if (!suggestResponse.ok) {
+            throw new Error('Failed to get suggestions');
+        }
+
+        const suggestData = await suggestResponse.json();
+
+        // Display results
+        displaySuggestions(suggestData.suggestions);
+        displayResults(analyzeData.tasks);
+
+        // Check for circular dependencies
+        if (analyzeData.circular_dependencies && analyzeData.circular_dependencies.length > 0) {
+            alert(`Warning: Circular dependencies detected in tasks: ${analyzeData.circular_dependencies.join(', ')}`);
+        }
+
+    } catch (error) {
+        alert('Error analyzing tasks: ' + error.message);
+        console.error('Analysis error:', error);
+    } finally {
+        
+    }
 }
 

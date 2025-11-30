@@ -64,6 +64,26 @@
           </button>
         </div>
       </section>
+
+      <section class="task-list-section">
+        <div class="task-header">
+          <h2>Current Tasks (<span id="taskCount">0</span>)</h2>
+          <button id="analyzeBtn" class="btn btn-success" disabled>
+            Analyze Tasks
+          </button>
+        </div>
+        <div id="taskList" class="task-list"></div>
+      </section>
+
+      <section id="suggestionsSection" class="suggestions-section hidden">
+            <h2>🌟 Top 3 Tasks to Work On Today</h2>
+            <div id="suggestions" class="suggestions-grid"></div>
+        </section>
+
+        <section id="resultsSection" class="results-section hidden">
+            <h2>Analyzed Tasks</h2>
+            <div id="results" class="results-grid"></div>
+        </section>
     </div>
 
     <script src="script.js"></script>
