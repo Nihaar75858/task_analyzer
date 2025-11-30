@@ -94,6 +94,11 @@ class PriorityScorer:
             dependencies * weights['dependencies']
         )
         
+        # Generate explanation
+        explanation = cls._generate_explanation(
+            task, urgency, importance, effort, dependencies, strategy
+        )
+        
         return {
             'priority_score': round(final_score, 2),
             'breakdown': {
@@ -102,7 +107,7 @@ class PriorityScorer:
                 'effort_score': round(effort, 2),
                 'dependency_score': round(dependencies, 2)
             },
-            'explanation': "",
+            'explanation': explanation,
             'strategy_used': strategy
         }
         
@@ -154,3 +159,46 @@ class PriorityScorer:
                 errors.append("Estimated hours must be at least 0.5")
         
         return errors
+    
+    @staticmethod
+    def _generate_explanation(
+        task: Dict,
+        urgency: float,
+        importance: float,
+        effort: float,
+        dependencies: float,
+        strategy: str
+    ) -> str:
+        reasons = []
+        
+        if urgency > 95:
+            reasons.append("OVERDUE - requires immediate attention")
+        elif urgency > 85:
+            reasons.append("due very soon")
+        elif urgency > 70:
+            reasons.append("approaching deadline")
+        
+        if importance > 80:
+            reasons.append("high importance rating")
+        elif importance > 50:
+            reasons.append("moderate importance")
+        
+        if effort > 70:
+            reasons.append("quick win opportunity")
+        elif effort < 30:
+            reasons.append("significant time investment")
+        
+        if dependencies > 20:
+            reasons.append("blocks other tasks")
+        
+        if not reasons:
+            reasons.append("balanced priority across all factors")
+        
+        strategy_context = {
+            'fastest_wins': "Prioritized for quick completion. ",
+            'high_impact': "Prioritized for maximum impact. ",
+            'deadline_driven': "Prioritized by deadline urgency. ",
+            'smart_balance': "Balanced priority considering all factors. "
+        }
+        
+        return strategy_context.get(strategy, "") + ", ".join(reasons).capitalize() + "."
