@@ -32,6 +32,7 @@ class PriorityScorer:
     
     @staticmethod
     def calculate_urgency_score(due_date: date) -> float:
+        
         today = date.today()
         days_until_due = (due_date - today).days
         
@@ -105,5 +106,21 @@ class PriorityScorer:
             'strategy_used': strategy
         }
         
-    def validate_task(cls, task, self):
-        pass
+    @classmethod
+    def validate_task(cls, task: Dict[str, Any]) -> List[str]:
+        errors = []
+        
+        required_fields = ['title', 'due_date', 'estimated_hours', 'importance']
+        for field in required_fields:
+            if field not in task or task[field] is None:
+                errors.append(f"Missing required field: {field}")
+        
+        if 'importance' in task:
+            if not (1 <= task['importance'] <= 10):
+                errors.append("Importance must be between 1 and 10")
+        
+        if 'estimated_hours' in task:
+            if task['estimated_hours'] < 0.5:
+                errors.append("Estimated hours must be at least 0.5")
+        
+        return errors
