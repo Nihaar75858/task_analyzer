@@ -73,7 +73,10 @@ def analyze_tasks(request):
             'strategy_used': strategy,
             'total_tasks': len(analyzed_tasks)
         })
-        
+    except json.JSONDecodeError:
+        return JsonResponse({
+            'error': 'Invalid JSON in request body'
+        }, status=400)
     except Exception as e:
         return JsonResponse({
             'error': str(e)
@@ -148,6 +151,10 @@ def suggest_tasks(request):
             'strategy_used': strategy,
             'total_tasks_analyzed': len(analyzed_tasks)
         })
+    except json.JSONDecodeError:
+        return JsonResponse({
+            'error': 'Invalid JSON in request body'
+        }, status=400)
     except Exception as e:
         return JsonResponse({
             'error': str(e)
