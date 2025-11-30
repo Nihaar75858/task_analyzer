@@ -104,3 +104,6 @@ class PriorityScorer:
             'explanation': "",
             'strategy_used': strategy
         }
+        
+    def validate_task(cls, task, self):
+        pass

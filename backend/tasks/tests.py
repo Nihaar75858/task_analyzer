@@ -75,3 +75,16 @@ class TestPriorityScorer:
             score_deadline['priority_score']
         ]
         assert len(set(scores)) > 1
+        
+    def test_validation_missing_fields(self):
+        """Test validation catches missing required fields"""
+        incomplete_task = {
+            'title': 'Test Task',
+            'due_date': '2025-12-01'
+            # Missing estimated_hours and importance
+        }
+        
+        errors = PriorityScorer.validate_task(incomplete_task)
+        assert len(errors) > 0
+        assert any('estimated_hours' in error for error in errors)
+        assert any('importance' in error for error in errors)
